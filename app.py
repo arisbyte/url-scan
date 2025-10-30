@@ -9,7 +9,12 @@ def generate_ai_analysis(df, resumen):
     """
     try:
         # Preparar resumen de datos para Claude
-        total_enlaces = len(df)
+        total_urls_unicas = df['Destino'].nunique()
+        total_instancias = len(df)
+        
+        # Códigos de estado (URLs únicas)
+        codigo_0 = resumen.get(0, 0)
+        codigo_200 = resumen.get(200, 0)
         codigo_301 = resumen.get(301, 0)
         codigo_302 = resumen.get(302, 0)
         codigo_308 = resumen.get(308, 0)
@@ -18,12 +23,19 @@ def generate_ai_analysis(df, resumen):
         codigo_404 = resumen.get(404, 0)
         codigo_500 = resumen.get(500, 0)
         
-        # Top 5 URLs con más problemas (si hay columna Fuente)
+        # Top 5 páginas origen (Desde) con más problemas
         if 'Fuente' in df.columns:
             top_problemas = df['Fuente'].value_counts().head(5)
-            top_urls = "\n".join([f"- {url}: {count} enlaces problemáticos" for url, count in top_problemas.items()])
+            top_urls_desde = "\n".join([f"- {url}: {count} enlaces problemáticos" for url, count in top_problemas.items()])
         else:
-            top_urls = "No disponible"
+            top_urls_desde = "No disponible"
+        
+        # Top 5 URLs destino (Hasta) más problemáticas
+        if 'Destino' in df.columns:
+            top_destinos = df['Destino'].value_counts().head(5)
+            top_urls_hasta = "\n".join([f"- {url}: {count} instancias" for url, count in top_destinos.items()])
+        else:
+            top_urls_hasta = "No disponible"
         
         # Analizar anclas únicas en errores 404
         anclas_404 = ""
@@ -33,25 +45,81 @@ def generate_ai_analysis(df, resumen):
                 # Reemplazar None/NaN por guion
                 df_404_temp['Ancla'] = df_404_temp['Ancla'].fillna('-')
                 anclas_unicas = df_404_temp['Ancla'].unique()
-                anclas_404 = f"\n\nANCLAS ÚNICAS EN ERRORES 404:\n" + "\n".join([f"- {ancla}" for ancla in anclas_unicas[:10]])
-                if len(anclas_unicas) > 10:
-                    anclas_404 += f"\n... y {len(anclas_unicas) - 10} más"
+                anclas_404 = f"\n\nANCLAS ÚNICAS EN ERRORES 404 ({len(anclas_unicas)} diferentes):\n" + "\n".join([f"- {ancla}" for ancla in anclas_unicas[:15]])
+                if len(anclas_unicas) > 15:
+                    anclas_404 += f"\n... y {len(anclas_unicas) - 15} más"
         
         # Construir prompt para Claude
-        prompt = f"""Eres un experto en SEO técnico. Analiza los siguientes datos de un rastreo de sitio web y proporciona un análisis ejecutivo conciso y accionable.
+        prompt = f"""Eres un experto en análisis de enlaces y códigos de respuesta HTTP. Analiza los siguientes datos de un rastreo web y proporciona un diagnóstico ejecutivo conciso y accionable.
 
-DATOS DEL SITIO:
-- Total de enlaces problemáticos: {total_enlaces}
-- Errores 404 (páginas no encontradas): {codigo_404}
-- Errores 403 (acceso prohibido): {codigo_403}
-- Errores 400 (bad request): {codigo_400}
-- Errores 500 (error del servidor): {codigo_500}
-- Redirecciones 301 (permanentes): {codigo_301}
-- Redirecciones 302 (temporales): {codigo_302}
-- Redirecciones 308 (permanentes): {codigo_308}
+CONTEXTO DEL ANÁLISIS:
+Este informe usa ELSA (Error Link Status Analyzer) que analiza URLs únicas encontradas durante el rastreo.
+- Total de URLs únicas analizadas: {total_urls_unicas:,}
+- Total de instancias de enlaces: {total_instancias:,}
 
-PÁGINAS CON MÁS PROBLEMAS:
-{top_urls}{anclas_404}
+DISTRIBUCIÓN POR CÓDIGO DE RESPUESTA (URLs únicas):
+- Código 0 (sin respuesta): {codigo_0}
+- Código 200 (OK): {codigo_200}
+- Código 301 (redirect permanente): {codigo_301}
+- Código 302 (redirect temporal): {codigo_302}
+- Código 308 (redirect permanente HTTP): {codigo_308}
+- Código 400 (bad request): {codigo_400}
+- Código 403 (acceso prohibido): {codigo_403}
+- Código 404 (no encontrado): {codigo_404}
+- Código 500 (error de servidor): {codigo_500}
+
+TOP 5 PÁGINAS ORIGEN (DESDE) CON MÁS PROBLEMAS:
+{top_urls_desde}
+
+TOP 5 URLs DESTINO (HASTA) MÁS PROBLEMÁTICAS:
+{top_urls_hasta}{anclas_404}
+
+ESTRUCTURA REQUERIDA:
+
+**DIAGNÓSTICO GENERAL**
+Evaluación del estado del sitio en 2-3 líneas. Enfócate en los códigos más críticos (404, 500, 403).
+
+**PROBLEMAS IDENTIFICADOS**
+Lista los problemas en orden de severidad:
+- [ ] Problema crítico 1
+- [ ] Problema crítico 2
+- [ ] Problema de alta prioridad 1
+- [ ] Problema de media prioridad 1
+
+**ANÁLISIS DE PATRONES**
+Identifica patrones basándote en:
+- Páginas origen (Desde) que generan más problemas
+- URLs destino (Hasta) más afectadas
+- Anclas en errores 404: patrones, causas probables, texto vacío (-) vs texto descriptivo
+
+**PLAN DE ACCIÓN PRIORIZADO**
+
+1. **🔴 Prioridad Crítica** (Resolver inmediatamente)
+   - [ ] Acción específica para 404s
+   - [ ] Acción específica para 500s
+   - [ ] Acción específica para 403s
+
+2. **🟡 Prioridad Alta** (Resolver esta semana)
+   - [ ] Acción específica para redirecciones
+   - [ ] Acción específica para 400s
+
+3. **🟢 Prioridad Media** (Optimización)
+   - [ ] Mejora sugerida 1
+   - [ ] Mejora sugerida 2
+
+**IMPACTO EN SEO Y EXPERIENCIA DE USUARIO**
+- Impacto en rastreo/indexación
+- Impacto en experiencia de usuario
+- Impacto en autoridad/ranking
+
+INSTRUCCIONES IMPORTANTES:
+- Sé conciso y directo - máximo 250 palabras total
+- NO menciones herramientas de rastreo (Screaming Frog, etc)
+- NO incluyas tiempos estimados
+- Usa formato checklist para todas las acciones
+- Enfócate en QUÉ hacer, no en CÓMO hacerlo técnicamente
+- Si hay muchos anclas con "-", menciona que son enlaces sin texto (imágenes/scripts)
+- Prioriza basándote en la cantidad de URLs únicas afectadas"""
 
 ESTRUCTURA REQUERIDA:
 
