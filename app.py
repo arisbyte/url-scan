@@ -197,6 +197,7 @@ st.header("📈 2. Distribución de Códigos de Estado")
 st.subheader("Resumen Visual")
 
 # Obtener datos de cada código
+codigo_0 = resumen.get(0, 0)
 codigo_200 = resumen.get(200, 0)
 codigo_301 = resumen.get(301, 0)
 codigo_302 = resumen.get(302, 0)
@@ -209,10 +210,19 @@ codigo_500 = resumen.get(500, 0)
 # Total de URLs únicas para calcular porcentajes
 total = df['Destino'].nunique()
 
-# Crear 8 columnas para las tarjetas en una sola línea
-col1, col2, col3, col4, col5, col6, col7, col8 = st.columns(8)
+# Crear 9 columnas para las tarjetas en una sola línea
+col1, col2, col3, col4, col5, col6, col7, col8, col9 = st.columns(9)
 
 with col1:
+    st.markdown(f"""
+    <div style="background-color: #6c757d; padding: 12px 8px; border-radius: 8px; text-align: center;">
+        <h4 style="color: white; margin: 0; font-size: 13px;">0</h4>
+        <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_0}</h1>
+        <p style="color: white; margin: 0; font-size: 16px;">{(codigo_0/total*100):.1f}%</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col2:
     st.markdown(f"""
     <div style="background-color: #28a745; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">200</h4>
@@ -221,7 +231,7 @@ with col1:
     </div>
     """, unsafe_allow_html=True)
 
-with col2:
+with col3:
     st.markdown(f"""
     <div style="background-color: #FFA500; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">301</h4>
@@ -230,7 +240,7 @@ with col2:
     </div>
     """, unsafe_allow_html=True)
 
-with col3:
+with col4:
     st.markdown(f"""
     <div style="background-color: #FFD700; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: #333; margin: 0; font-size: 13px;">302</h4>
@@ -239,7 +249,7 @@ with col3:
     </div>
     """, unsafe_allow_html=True)
 
-with col4:
+with col5:
     st.markdown(f"""
     <div style="background-color: #FF6347; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">400</h4>
@@ -248,7 +258,7 @@ with col4:
     </div>
     """, unsafe_allow_html=True)
 
-with col5:
+with col6:
     st.markdown(f"""
     <div style="background-color: #FF8C00; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">403</h4>
@@ -257,7 +267,7 @@ with col5:
     </div>
     """, unsafe_allow_html=True)
 
-with col6:
+with col7:
     st.markdown(f"""
     <div style="background-color: #DC143C; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">404</h4>
@@ -266,7 +276,7 @@ with col6:
     </div>
     """, unsafe_allow_html=True)
 
-with col7:
+with col8:
     st.markdown(f"""
     <div style="background-color: #FFB347; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">308</h4>
@@ -275,7 +285,7 @@ with col7:
     </div>
     """, unsafe_allow_html=True)
 
-with col8:
+with col9:
     st.markdown(f"""
     <div style="background-color: #8B0000; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">500</h4>
@@ -349,7 +359,7 @@ if len(df_404) > 0:
     # Tabla de 404s
     tabla_404 = df_404[['Destino', 'Fuente', 'Ancla']].copy()
     tabla_404['Ancla'] = tabla_404['Ancla'].fillna('-')
-    tabla_404.columns = ['Destino', 'Fuente', 'Ancla']
+    tabla_404.columns = ['Desde', 'Hasta', 'Ancla']
     
     st.dataframe(tabla_404, use_container_width=True, hide_index=True)
 else:
@@ -367,8 +377,8 @@ if len(df_redirects) > 0:
     st.write(f"**Se encontraron {urls_unicas_redirects} URLs únicas con redirecciones ({len(df_redirects)} instancias totales):**")
     
     # Mostrar solo las primeras 10
-    tabla_redirects = df_redirects[['Fuente', 'Destino', 'Código de estado']].head(10).copy()
-    tabla_redirects.columns = ['Fuente', 'Destino', 'Código de estado']
+    tabla_redirects = df_redirects[['Destino', 'Fuente', 'Código de estado']].head(10).copy()
+    tabla_redirects.columns = ['Desde', 'Hasta', 'Código de estado']
     
     st.dataframe(tabla_redirects, use_container_width=True, hide_index=True)
     
@@ -388,8 +398,8 @@ if len(df_otros) > 0:
     urls_unicas_otros = df_otros['Destino'].nunique()
     st.write(f"**Se encontraron {urls_unicas_otros} URLs únicas con errores críticos ({len(df_otros)} instancias totales):**")
     
-    tabla_otros = df_otros[['Fuente', 'Destino', 'Código de estado', 'Tipo']].head(10).copy()
-    tabla_otros.columns = ['Fuente', 'Destino', 'Código de estado', 'Tipo']
+    tabla_otros = df_otros[['Destino', 'Fuente', 'Código de estado', 'Tipo']].head(10).copy()
+    tabla_otros.columns = ['Desde', 'Hasta', 'Código de estado', 'Tipo']
     
     st.dataframe(tabla_otros, use_container_width=True, hide_index=True)
     
