@@ -114,7 +114,7 @@ IMPORTANTE:
 
 # Configuración de la página
 st.set_page_config(
-    page_title="Análisis de Enlaces - Códigos HTTP",
+    page_title="ELSA - Error Link Status Analyzer",
     page_icon="🟢",
     layout="wide"
 )
@@ -126,8 +126,8 @@ st.markdown("""
         <img src="https://imagizer.imageshack.com/img922/1260/r88PYU.png" 
              style="height: 80px; display: block;">
     </div>
-    <h1 style="margin: 0; text-align: center;">Análisis de Enlaces por Código de Respuesta HTTP</h1>
-    <p style="color: #666; font-size: 18px; margin: 10px 0 0 0; text-align: center;">Identificación y diagnóstico de errores 404, redirecciones y problemas de acceso</p>
+    <h1 style="margin: 0; text-align: center;">ELSA - Error Link Status Analyzer</h1>
+    <p style="color: #666; font-size: 18px; margin: 10px 0 0 0; text-align: center;">Intelligent HTTP Response Code Analysis</p>
 </div>
 """, unsafe_allow_html=True)
 st.markdown("---")
