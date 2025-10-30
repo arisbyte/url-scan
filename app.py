@@ -151,7 +151,8 @@ if uploaded_file is None:
 else:
     # Cargar el CSV real
     df = pd.read_csv(uploaded_file, sep=';', encoding='utf-8-sig')
-    st.success(f"✅ Archivo cargado correctamente: {len(df)} enlaces encontrados")
+    urls_unicas = df['Destino'].nunique()
+    st.success(f"✅ Archivo cargado correctamente: {urls_unicas:,} URLs únicas encontradas")
 
 # ==================== SECCIÓN 1: RESUMEN EJECUTIVO ====================
 st.header("1. Resumen Ejecutivo")
@@ -196,6 +197,7 @@ st.header("📈 2. Distribución de Códigos de Estado")
 st.subheader("Resumen Visual")
 
 # Obtener datos de cada código
+codigo_200 = resumen.get(200, 0)
 codigo_301 = resumen.get(301, 0)
 codigo_302 = resumen.get(302, 0)
 codigo_308 = resumen.get(308, 0)
@@ -207,10 +209,19 @@ codigo_500 = resumen.get(500, 0)
 # Total de URLs únicas para calcular porcentajes
 total = df['Destino'].nunique()
 
-# Crear 7 columnas para las tarjetas en una sola línea
-col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
+# Crear 8 columnas para las tarjetas en una sola línea
+col1, col2, col3, col4, col5, col6, col7, col8 = st.columns(8)
 
 with col1:
+    st.markdown(f"""
+    <div style="background-color: #28a745; padding: 12px 8px; border-radius: 8px; text-align: center;">
+        <h4 style="color: white; margin: 0; font-size: 13px;">200</h4>
+        <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_200}</h1>
+        <p style="color: white; margin: 0; font-size: 16px;">{(codigo_200/total*100):.1f}%</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col2:
     st.markdown(f"""
     <div style="background-color: #FFA500; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">301</h4>
@@ -219,7 +230,7 @@ with col1:
     </div>
     """, unsafe_allow_html=True)
 
-with col2:
+with col3:
     st.markdown(f"""
     <div style="background-color: #FFD700; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: #333; margin: 0; font-size: 13px;">302</h4>
@@ -228,7 +239,7 @@ with col2:
     </div>
     """, unsafe_allow_html=True)
 
-with col3:
+with col4:
     st.markdown(f"""
     <div style="background-color: #FF6347; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">400</h4>
@@ -237,7 +248,7 @@ with col3:
     </div>
     """, unsafe_allow_html=True)
 
-with col4:
+with col5:
     st.markdown(f"""
     <div style="background-color: #FF8C00; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">403</h4>
@@ -246,7 +257,7 @@ with col4:
     </div>
     """, unsafe_allow_html=True)
 
-with col5:
+with col6:
     st.markdown(f"""
     <div style="background-color: #DC143C; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">404</h4>
@@ -255,7 +266,7 @@ with col5:
     </div>
     """, unsafe_allow_html=True)
 
-with col6:
+with col7:
     st.markdown(f"""
     <div style="background-color: #FFB347; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">308</h4>
@@ -264,7 +275,7 @@ with col6:
     </div>
     """, unsafe_allow_html=True)
 
-with col7:
+with col8:
     st.markdown(f"""
     <div style="background-color: #8B0000; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">500</h4>
@@ -336,9 +347,9 @@ if len(df_404) > 0:
     st.write(f"**Se encontraron {urls_unicas_404} URLs únicas con error 404 ({len(df_404)} instancias totales):**")
     
     # Tabla de 404s
-    tabla_404 = df_404[['Fuente', 'Destino', 'Ancla']].copy()
+    tabla_404 = df_404[['Destino', 'Fuente', 'Ancla']].copy()
     tabla_404['Ancla'] = tabla_404['Ancla'].fillna('-')
-    tabla_404.columns = ['Fuente', 'Destino', 'Ancla']
+    tabla_404.columns = ['Destino', 'Fuente', 'Ancla']
     
     st.dataframe(tabla_404, use_container_width=True, hide_index=True)
 else:
