@@ -12,9 +12,11 @@ def generate_ai_analysis(df, resumen):
         total_enlaces = len(df)
         codigo_301 = resumen.get(301, 0)
         codigo_302 = resumen.get(302, 0)
+        codigo_308 = resumen.get(308, 0)
         codigo_400 = resumen.get(400, 0)
         codigo_403 = resumen.get(403, 0)
         codigo_404 = resumen.get(404, 0)
+        codigo_500 = resumen.get(500, 0)
         
         # Top 5 URLs con más problemas (si hay columna Fuente)
         if 'Fuente' in df.columns:
@@ -31,8 +33,10 @@ DATOS DEL SITIO:
 - Errores 404 (páginas no encontradas): {codigo_404}
 - Errores 403 (acceso prohibido): {codigo_403}
 - Errores 400 (bad request): {codigo_400}
+- Errores 500 (error del servidor): {codigo_500}
 - Redirecciones 301 (permanentes): {codigo_301}
 - Redirecciones 302 (temporales): {codigo_302}
+- Redirecciones 308 (permanentes): {codigo_308}
 
 PÁGINAS CON MÁS PROBLEMAS:
 {top_urls}
@@ -150,7 +154,7 @@ with col3:
     st.metric("🚫 Errores 403", total_403)
 
 with col4:
-    total_redirects = resumen.get(301, 0) + resumen.get(302, 0)
+    total_redirects = resumen.get(301, 0) + resumen.get(302, 0) + resumen.get(308, 0)
     st.metric("↪️ Redirecciones", total_redirects)
 
 st.markdown("---")
@@ -164,14 +168,16 @@ st.subheader("Resumen Visual")
 # Obtener datos de cada código
 codigo_301 = resumen.get(301, 0)
 codigo_302 = resumen.get(302, 0)
+codigo_308 = resumen.get(308, 0)
 codigo_400 = resumen.get(400, 0)
 codigo_403 = resumen.get(403, 0)
 codigo_404 = resumen.get(404, 0)
+codigo_500 = resumen.get(500, 0)
 
 total = len(df)
 
-# Crear 5 columnas para las tarjetas en una sola línea
-col1, col2, col3, col4, col5 = st.columns(5)
+# Crear 7 columnas para las tarjetas en una sola línea
+col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
 
 with col1:
     st.markdown(f"""
@@ -215,6 +221,24 @@ with col5:
         <h4 style="color: white; margin: 0; font-size: 13px;">404</h4>
         <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_404}</h1>
         <p style="color: white; margin: 0; font-size: 16px;">{(codigo_404/total*100):.1f}%</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col6:
+    st.markdown(f"""
+    <div style="background-color: #FFB347; padding: 12px 8px; border-radius: 8px; text-align: center;">
+        <h4 style="color: white; margin: 0; font-size: 13px;">308</h4>
+        <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_308}</h1>
+        <p style="color: white; margin: 0; font-size: 16px;">{(codigo_308/total*100):.1f}%</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col7:
+    st.markdown(f"""
+    <div style="background-color: #8B0000; padding: 12px 8px; border-radius: 8px; text-align: center;">
+        <h4 style="color: white; margin: 0; font-size: 13px;">500</h4>
+        <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_500}</h1>
+        <p style="color: white; margin: 0; font-size: 16px;">{(codigo_500/total*100):.1f}%</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -289,9 +313,9 @@ else:
 st.markdown("---")
 
 # ==================== SECCIÓN 4: ANÁLISIS DE REDIRECCIONES ====================
-st.header("↪️ 4. Análisis de Redirecciones (301/302)")
+st.header("↪️ 4. Análisis de Redirecciones (301/302/308)")
 
-df_redirects = df[df['Código de estado'].isin([301, 302])]
+df_redirects = df[df['Código de estado'].isin([301, 302, 308])]
 
 if len(df_redirects) > 0:
     st.write(f"**Se encontraron {len(df_redirects)} redirecciones:**")
@@ -310,9 +334,9 @@ else:
 st.markdown("---")
 
 # ==================== SECCIÓN 5: OTROS ERRORES ====================
-st.header("⚠️ 5. Otros Errores Críticos (400, 403)")
+st.header("⚠️ 5. Otros Errores Críticos (400, 403, 500)")
 
-df_otros = df[df['Código de estado'].isin([400, 403])]
+df_otros = df[df['Código de estado'].isin([400, 403, 500])]
 
 if len(df_otros) > 0:
     st.write(f"**Se encontraron {len(df_otros)} errores críticos:**")
@@ -334,12 +358,14 @@ st.markdown("### Códigos a Solucionar por Orden de Prioridad:")
 st.markdown("""
 **🔴 PRIORIDAD CRÍTICA (Solucionar Inmediatamente):**
 - **404 - Not Found**: Enlaces rotos que generan error al usuario. Corregir o redirigir las URLs.
+- **500 - Internal Server Error**: Error del servidor. Revisar configuración y logs del servidor.
 - **403 - Forbidden**: Recursos bloqueados sin permisos de acceso. Verificar configuración del servidor.
 - **400 - Bad Request**: Solicitudes mal formadas. Revisar estructura de las URLs.
 
 **🟡 PRIORIDAD MEDIA (Revisar y Optimizar):**
 - **301 - Moved Permanently**: Redirecciones permanentes. Evaluar si son necesarias (afectan velocidad).
 - **302 - Found**: Redirecciones temporales. Verificar si deberían ser permanentes (301).
+- **308 - Permanent Redirect**: Redirección permanente que preserva el método HTTP. Similar a 301.
 """)
 
 st.markdown("---")
