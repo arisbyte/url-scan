@@ -98,41 +98,11 @@ st.set_page_config(
 
 # ==================== TÍTULO ====================
 st.markdown("""
-<style>
-/* Estilo para logo adaptativo según tema de Streamlit */
-[data-testid="stAppViewContainer"] .logo-light { 
-    display: none; 
-}
-[data-testid="stAppViewContainer"] .logo-dark { 
-    display: block; 
-}
-
-/* Cuando el tema es light */
-[data-testid="stAppViewContainer"][data-theme="light"] .logo-light,
-.stApp[data-theme="light"] .logo-light {
-    display: block;
-}
-[data-testid="stAppViewContainer"][data-theme="light"] .logo-dark,
-.stApp[data-theme="light"] .logo-dark {
-    display: none;
-}
-
-/* Fallback para detectar por prefers-color-scheme */
-@media (prefers-color-scheme: light) {
-    .logo-light { display: block !important; }
-    .logo-dark { display: none !important; }
-}
-@media (prefers-color-scheme: dark) {
-    .logo-light { display: none !important; }
-    .logo-dark { display: block !important; }
-}
-</style>
-
 <div style="text-align: center;">
-    <img class="logo-dark" src="https://imagizer.imageshack.com/img922/1260/r88PYU.png" 
-         style="height: 80px; margin-bottom: 20px; display: block; margin-left: auto; margin-right: auto;">
-    <img class="logo-light" src="https://imagizer.imageshack.com/img923/8185/hGH4WQ.png" 
-         style="height: 80px; margin-bottom: 20px; display: none; margin-left: auto; margin-right: auto;">
+    <div style="background-color: #2b2b2b; padding: 20px; border-radius: 10px; display: inline-block; margin-bottom: 20px;">
+        <img src="https://imagizer.imageshack.com/img922/1260/r88PYU.png" 
+             style="height: 80px; display: block;">
+    </div>
     <h1 style="margin: 0; text-align: center;">Informe de Enlaces Problemáticos - Análisis SEO Técnico</h1>
     <p style="color: #666; font-size: 18px; margin: 10px 0 0 0; text-align: center;">Identificación y diagnóstico de errores 404, redirecciones y problemas de acceso</p>
 </div>
