@@ -158,8 +158,8 @@ st.header("1. Resumen Ejecutivo")
 
 col1, col2, col3, col4, col5, col6 = st.columns(6)
 
-# Contar por código de estado
-resumen = df['Código de estado'].value_counts()
+# Contar URLs únicas de destino por código de estado
+resumen = df.groupby('Código de estado')['Destino'].nunique()
 
 with col1:
     st.metric("Total de Enlaces", f"{len(df):,}")
@@ -326,7 +326,8 @@ st.header("🔴 3. Detalle de Errores 404 (Enlaces Rotos)")
 df_404 = df[df['Código de estado'] == 404]
 
 if len(df_404) > 0:
-    st.write(f"**Se encontraron {len(df_404)} enlaces rotos que deben ser corregidos:**")
+    urls_unicas_404 = df_404['Destino'].nunique()
+    st.write(f"**Se encontraron {urls_unicas_404} URLs únicas con error 404 ({len(df_404)} instancias totales):**")
     
     # Tabla de 404s
     tabla_404 = df_404[['Fuente', 'Destino', 'Ancla']].copy()
@@ -345,7 +346,8 @@ st.header("↪️ 4. Análisis de Redirecciones (301/302/308)")
 df_redirects = df[df['Código de estado'].isin([301, 302, 308])]
 
 if len(df_redirects) > 0:
-    st.write(f"**Se encontraron {len(df_redirects)} redirecciones:**")
+    urls_unicas_redirects = df_redirects['Destino'].nunique()
+    st.write(f"**Se encontraron {urls_unicas_redirects} URLs únicas con redirecciones ({len(df_redirects)} instancias totales):**")
     
     # Mostrar solo las primeras 10
     tabla_redirects = df_redirects[['Fuente', 'Destino', 'Código de estado']].head(10).copy()
@@ -366,7 +368,8 @@ st.header("⚠️ 5. Otros Errores Críticos (400, 403, 500)")
 df_otros = df[df['Código de estado'].isin([400, 403, 500])]
 
 if len(df_otros) > 0:
-    st.write(f"**Se encontraron {len(df_otros)} errores críticos:**")
+    urls_unicas_otros = df_otros['Destino'].nunique()
+    st.write(f"**Se encontraron {urls_unicas_otros} URLs únicas con errores críticos ({len(df_otros)} instancias totales):**")
     
     tabla_otros = df_otros[['Fuente', 'Destino', 'Código de estado', 'Tipo']].head(10).copy()
     tabla_otros.columns = ['Fuente', 'Destino', 'Código de estado', 'Tipo']
