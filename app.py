@@ -128,25 +128,9 @@ else:
     df = pd.read_csv(uploaded_file, sep=';', encoding='utf-8-sig')
     st.success(f"✅ Archivo cargado correctamente: {len(df)} enlaces encontrados")
 
-# ==================== SECCIÓN 1: RESUMEN EJECUTIVO + IA ====================
-# Títulos en la misma línea
-col_title1, col_title2, col_button = st.columns([2, 2, 1])
+# ==================== SECCIÓN 1: RESUMEN EJECUTIVO ====================
+st.header("1. Resumen Ejecutivo")
 
-with col_title1:
-    st.header("1. Resumen Ejecutivo")
-
-with col_title2:
-    st.header("🤖 Análisis Inteligente con IA")
-
-with col_button:
-    st.write("")  # Espaciado
-    if "ANTHROPIC_API_KEY" in st.secrets:
-        if st.button("🚀 Generar Análisis", type="primary", use_container_width=True):
-            with st.spinner("Analizando..."):
-                analysis = generate_ai_analysis(df, resumen)
-                st.session_state['ai_analysis'] = analysis
-
-# Métricas del resumen ejecutivo
 col1, col2, col3, col4 = st.columns(4)
 
 # Contar por código de estado
@@ -168,28 +152,6 @@ with col4:
     st.metric("↪️ Redirecciones", total_redirects)
 
 st.markdown("---")
-
-# Mostrar análisis si existe
-if "ANTHROPIC_API_KEY" in st.secrets:
-    if 'ai_analysis' in st.session_state:
-        st.subheader("📋 Análisis Generado")
-        
-        # Mostrar el análisis con markdown
-        st.markdown(st.session_state['ai_analysis'])
-        
-        # Opción para descargar el texto
-        st.download_button(
-            label="📄 Descargar Análisis como TXT",
-            data=st.session_state['ai_analysis'],
-            file_name="analisis_seo_ia.txt",
-            mime="text/plain"
-        )
-        st.markdown("---")
-else:
-    st.info("💡 El análisis con IA estará disponible cuando configures tu API key de Anthropic en Streamlit Secrets.")
-    st.write("**Agrega tu API key en:** Settings → Secrets")
-    st.code('ANTHROPIC_API_KEY = "tu_key_aquí"', language="toml")
-    st.markdown("---")
 
 # ==================== SECCIÓN 2: DISTRIBUCIÓN POR CÓDIGO ====================
 st.header("📈 2. Distribución de Códigos de Estado")
@@ -256,6 +218,42 @@ with col5:
 
 st.markdown("---")
 
+# ==================== SECCIÓN IA: ANÁLISIS INTELIGENTE ====================
+st.markdown("<h2 style='text-align: center;'>🤖 Análisis Inteligente con IA</h2>", unsafe_allow_html=True)
+
+# Centrar el botón
+col1, col2, col3 = st.columns([2, 1, 2])
+
+with col2:
+    if "ANTHROPIC_API_KEY" in st.secrets:
+        if st.button("🚀 Generar Análisis", type="primary", use_container_width=True):
+            with st.spinner("Analizando..."):
+                analysis = generate_ai_analysis(df, resumen)
+                st.session_state['ai_analysis'] = analysis
+
+# Mostrar análisis si existe
+if "ANTHROPIC_API_KEY" in st.secrets:
+    if 'ai_analysis' in st.session_state:
+        st.markdown("---")
+        st.subheader("📋 Análisis Generado")
+        
+        # Mostrar el análisis con markdown
+        st.markdown(st.session_state['ai_analysis'])
+        
+        # Opción para descargar el texto
+        st.download_button(
+            label="📄 Descargar Análisis como TXT",
+            data=st.session_state['ai_analysis'],
+            file_name="analisis_seo_ia.txt",
+            mime="text/plain"
+        )
+else:
+    st.info("💡 El análisis con IA estará disponible cuando configures tu API key de Anthropic en Streamlit Secrets.")
+    st.write("**Agrega tu API key en:** Settings → Secrets")
+    st.code('ANTHROPIC_API_KEY = "tu_key_aquí"', language="toml")
+
+st.markdown("---")
+
 # Tabla detallada
 st.subheader("Tabla Detallada")
 
@@ -280,7 +278,7 @@ if len(df_404) > 0:
     
     # Tabla de 404s
     tabla_404 = df_404[['Fuente', 'Destino', 'Ancla']].copy()
-    tabla_404.columns = ['Página de Origen (Desde)', 'URL Rota (Hasta)', 'Texto del Enlace']
+    tabla_404.columns = ['Fuente', 'Destino', 'Ancla']
     
     st.dataframe(tabla_404, use_container_width=True, hide_index=True)
 else:
@@ -298,7 +296,7 @@ if len(df_redirects) > 0:
     
     # Mostrar solo las primeras 10
     tabla_redirects = df_redirects[['Fuente', 'Destino', 'Código de estado']].head(10).copy()
-    tabla_redirects.columns = ['Página de Origen', 'URL de Destino', 'Tipo']
+    tabla_redirects.columns = ['Fuente', 'Destino', 'Código de estado']
     
     st.dataframe(tabla_redirects, use_container_width=True, hide_index=True)
     
@@ -318,7 +316,7 @@ if len(df_otros) > 0:
     st.write(f"**Se encontraron {len(df_otros)} errores críticos:**")
     
     tabla_otros = df_otros[['Fuente', 'Destino', 'Código de estado', 'Tipo']].head(10).copy()
-    tabla_otros.columns = ['Página de Origen', 'URL con Error', 'Código', 'Tipo de Recurso']
+    tabla_otros.columns = ['Fuente', 'Destino', 'Código de estado', 'Tipo']
     
     st.dataframe(tabla_otros, use_container_width=True, hide_index=True)
     
