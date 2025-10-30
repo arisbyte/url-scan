@@ -34,13 +34,6 @@ La aplicación analiza los siguientes códigos HTTP:
 
 Antes de subir el archivo a la aplicación, es necesario excluir los códigos 200 y 0:
 
-**Usando Excel o Google Sheets:**
-1. Abrir el archivo CSV exportado
-2. Aplicar filtro en la columna "Código de estado"
-3. Deseleccionar los códigos **200** y **0**
-4. Copiar los datos filtrados a un nuevo archivo
-5. Guardar con formato CSV (delimitador: punto y coma)
-
 **Usando Power Query (Excel):**
 1. Cargar el CSV en Power Query
 2. Filtrar la columna "Código de estado"
@@ -67,7 +60,7 @@ El archivo resultante contendrá únicamente enlaces con problemas que requieren
 El archivo debe contener las siguientes columnas:
 - **Fuente**: URL de la página que contiene el enlace
 - **Destino**: URL hacia donde apunta el enlace
-- **Código de estado**: Código HTTP del enlace (301, 302, 400, 403, 404)
+- **Código de estado**: Código HTTP del enlace (301, 302, 308, 400, 403, 404, 500)
 - **Ancla**: Texto del enlace
 - **Tipo**: Tipo de recurso (Hipervínculo, Imagen, etc.)
 
@@ -98,10 +91,10 @@ Visualización de la cantidad de enlaces por tipo de error
 Lista completa de enlaces rotos
 
 **Análisis de Redirecciones**  
-Redirecciones 301 y 302 encontradas
+Redirecciones 301, 302 y 308 encontradas
 
 **Otros Errores Críticos**  
-Errores 400 y 403 identificados
+Errores 400, 403 y 500 identificados
 
 ### 4. Exportar resultados
 
@@ -111,13 +104,17 @@ El análisis generado por IA puede descargarse en formato TXT utilizando el bot�
 
 **Prioridad Crítica:**
 - **404**: Página no encontrada - Enlaces rotos que deben corregirse
+- **500**: Error interno del servidor - Revisar logs y configuración del servidor
 - **403**: Acceso prohibido - Recursos bloqueados
 - **400**: Solicitud incorrecta - URLs mal formadas
 
 **Prioridad Media:**
 - **301**: Redirección permanente - Revisar si son necesarias
 - **302**: Redirección temporal - Evaluar si deberían ser permanentes
+- **308**: Redirección permanente (preserva método HTTP) - Similar a 301
 
 ## Soporte
 
 Para consultas o reportar problemas, contactar al administrador del sistema.
+- <camila.aldana@thecollectiveagency.com>
+- <netzer.pita@thecollectiveagency.com>
