@@ -301,83 +301,92 @@ if total == 0:
 col1, col2, col3, col4, col5, col6, col7, col8, col9 = st.columns(9)
 
 with col1:
+    porcentaje_0 = (codigo_0/total*100) if total > 0 else 0
     st.markdown(f"""
     <div style="background-color: #6c757d; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">0</h4>
         <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_0}</h1>
-        <p style="color: white; margin: 0; font-size: 16px;">{(codigo_0/total*100):.1f}%</p>
+        <p style="color: white; margin: 0; font-size: 16px;">{porcentaje_0:.1f}%</p>
     </div>
     """, unsafe_allow_html=True)
 
 with col2:
+    porcentaje_200 = (codigo_200/total*100) if total > 0 else 0
     st.markdown(f"""
     <div style="background-color: #28a745; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">200</h4>
         <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_200}</h1>
-        <p style="color: white; margin: 0; font-size: 16px;">{(codigo_200/total*100):.1f}%</p>
+        <p style="color: white; margin: 0; font-size: 16px;">{porcentaje_200:.1f}%</p>
     </div>
     """, unsafe_allow_html=True)
 
 with col3:
+    porcentaje_301 = (codigo_301/total*100) if total > 0 else 0
     st.markdown(f"""
     <div style="background-color: #FFA500; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">301</h4>
         <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_301}</h1>
-        <p style="color: white; margin: 0; font-size: 16px;">{(codigo_301/total*100):.1f}%</p>
+        <p style="color: white; margin: 0; font-size: 16px;">{porcentaje_301:.1f}%</p>
     </div>
     """, unsafe_allow_html=True)
 
 with col4:
+    porcentaje_302 = (codigo_302/total*100) if total > 0 else 0
     st.markdown(f"""
     <div style="background-color: #FFD700; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: #333; margin: 0; font-size: 13px;">302</h4>
         <h1 style="color: #333; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_302}</h1>
-        <p style="color: #333; margin: 0; font-size: 16px;">{(codigo_302/total*100):.1f}%</p>
+        <p style="color: #333; margin: 0; font-size: 16px;">{porcentaje_302:.1f}%</p>
     </div>
     """, unsafe_allow_html=True)
 
 with col5:
+    porcentaje_400 = (codigo_400/total*100) if total > 0 else 0
     st.markdown(f"""
     <div style="background-color: #FF6347; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">400</h4>
         <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_400}</h1>
-        <p style="color: white; margin: 0; font-size: 16px;">{(codigo_400/total*100):.1f}%</p>
+        <p style="color: white; margin: 0; font-size: 16px;">{porcentaje_400:.1f}%</p>
     </div>
     """, unsafe_allow_html=True)
 
 with col6:
+    porcentaje_403 = (codigo_403/total*100) if total > 0 else 0
     st.markdown(f"""
     <div style="background-color: #FF8C00; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">403</h4>
         <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_403}</h1>
-        <p style="color: white; margin: 0; font-size: 16px;">{(codigo_403/total*100):.1f}%</p>
+        <p style="color: white; margin: 0; font-size: 16px;">{porcentaje_403:.1f}%</p>
     </div>
     """, unsafe_allow_html=True)
 
 with col7:
+    porcentaje_404 = (codigo_404/total*100) if total > 0 else 0
     st.markdown(f"""
     <div style="background-color: #DC143C; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">404</h4>
         <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_404}</h1>
-        <p style="color: white; margin: 0; font-size: 16px;">{(codigo_404/total*100):.1f}%</p>
+        <p style="color: white; margin: 0; font-size: 16px;">{porcentaje_404:.1f}%</p>
     </div>
     """, unsafe_allow_html=True)
 
 with col8:
+    porcentaje_308 = (codigo_308/total*100) if total > 0 else 0
     st.markdown(f"""
     <div style="background-color: #FFB347; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">308</h4>
         <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_308}</h1>
-        <p style="color: white; margin: 0; font-size: 16px;">{(codigo_308/total*100):.1f}%</p>
+        <p style="color: white; margin: 0; font-size: 16px;">{porcentaje_308:.1f}%</p>
     </div>
     """, unsafe_allow_html=True)
 
 with col9:
+    porcentaje_500 = (codigo_500/total*100) if total > 0 else 0
     st.markdown(f"""
     <div style="background-color: #8B0000; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">500</h4>
         <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_500}</h1>
-        <p style="color: white; margin: 0; font-size: 16px;">{(codigo_500/total*100):.1f}%</p>
+        <p style="color: white; margin: 0; font-size: 16px;">{porcentaje_500:.1f}%</p>
     </div>
     """, unsafe_allow_html=True)
 
