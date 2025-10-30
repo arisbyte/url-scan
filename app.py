@@ -25,6 +25,18 @@ def generate_ai_analysis(df, resumen):
         else:
             top_urls = "No disponible"
         
+        # Analizar anclas únicas en errores 404
+        anclas_404 = ""
+        if 'Ancla' in df.columns:
+            df_404_temp = df[df['Código de estado'] == 404].copy()
+            if len(df_404_temp) > 0:
+                # Reemplazar None/NaN por guion
+                df_404_temp['Ancla'] = df_404_temp['Ancla'].fillna('-')
+                anclas_unicas = df_404_temp['Ancla'].unique()
+                anclas_404 = f"\n\nANCLAS ÚNICAS EN ERRORES 404:\n" + "\n".join([f"- {ancla}" for ancla in anclas_unicas[:10]])
+                if len(anclas_unicas) > 10:
+                    anclas_404 += f"\n... y {len(anclas_unicas) - 10} más"
+        
         # Construir prompt para Claude
         prompt = f"""Eres un experto en SEO técnico. Analiza los siguientes datos de un rastreo de sitio web y proporciona un análisis ejecutivo conciso y accionable.
 
@@ -39,7 +51,7 @@ DATOS DEL SITIO:
 - Redirecciones 308 (permanentes): {codigo_308}
 
 PÁGINAS CON MÁS PROBLEMAS:
-{top_urls}
+{top_urls}{anclas_404}
 
 ESTRUCTURA REQUERIDA:
 
@@ -51,6 +63,12 @@ Lista los problemas en orden de severidad (usa checkboxes):
 - [ ] Problema 1
 - [ ] Problema 2
 - [ ] Problema 3
+
+**ANÁLISIS DE ANCLAS EN ERRORES 404**
+Si hay anclas únicas listadas, analiza brevemente:
+- Patrones comunes en los textos ancla
+- Posibles causas de los enlaces rotos basándote en los textos ancla
+- Recomendaciones específicas basadas en los anclas
 
 **PLAN DE ACCIÓN (Por Orden de Prioridad)**
 Acciones específicas y concretas ordenadas por prioridad (usa numeración):
@@ -75,7 +93,8 @@ IMPORTANTE:
 - NO menciones herramientas de rastreo
 - NO incluyas tiempos estimados
 - Usa formato checklist para acciones
-- Enfócate en QUÉ hacer, no en CUÁNDO hacerlo"""
+- Enfócate en QUÉ hacer, no en CUÁNDO hacerlo
+- Presta especial atención a los textos ancla de los 404 para dar recomendaciones más precisas"""
 
         # Llamar a la API de Claude
         client = anthropic.Anthropic(api_key=st.secrets["ANTHROPIC_API_KEY"])
@@ -95,8 +114,8 @@ IMPORTANTE:
 
 # Configuración de la página
 st.set_page_config(
-    page_title="Informe SEO - Análisis de Enlaces",
-    page_icon="🔍",
+    page_title="Análisis de Enlaces - Códigos HTTP",
+    page_icon="🟢",
     layout="wide"
 )
 
@@ -107,7 +126,7 @@ st.markdown("""
         <img src="https://imagizer.imageshack.com/img922/1260/r88PYU.png" 
              style="height: 80px; display: block;">
     </div>
-    <h1 style="margin: 0; text-align: center;">Informe de Enlaces Problemáticos - Análisis SEO Técnico</h1>
+    <h1 style="margin: 0; text-align: center;">Análisis de Enlaces por Código de Respuesta HTTP</h1>
     <p style="color: #666; font-size: 18px; margin: 10px 0 0 0; text-align: center;">Identificación y diagnóstico de errores 404, redirecciones y problemas de acceso</p>
 </div>
 """, unsafe_allow_html=True)
@@ -261,7 +280,6 @@ with col2:
 if "ANTHROPIC_API_KEY" in st.secrets:
     if 'ai_analysis' in st.session_state:
         st.markdown("---")
-        st.subheader("📋 Análisis Generado")
         
         # Mostrar el análisis con markdown
         st.markdown(st.session_state['ai_analysis'])
@@ -304,6 +322,7 @@ if len(df_404) > 0:
     
     # Tabla de 404s
     tabla_404 = df_404[['Fuente', 'Destino', 'Ancla']].copy()
+    tabla_404['Ancla'] = tabla_404['Ancla'].fillna('-')
     tabla_404.columns = ['Fuente', 'Destino', 'Ancla']
     
     st.dataframe(tabla_404, use_container_width=True, hide_index=True)
