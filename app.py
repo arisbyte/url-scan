@@ -357,7 +357,7 @@ if len(df_404) > 0:
     st.write(f"**Se encontraron {urls_unicas_404} URLs únicas con error 404 ({len(df_404)} instancias totales):**")
     
     # Tabla de 404s
-    tabla_404 = df_404[['Destino', 'Fuente', 'Ancla']].copy()
+    tabla_404 = df_404[['Fuente', 'Destino', 'Ancla']].copy()
     tabla_404['Ancla'] = tabla_404['Ancla'].fillna('-')
     tabla_404.columns = ['Desde', 'Hasta', 'Ancla']
     
@@ -377,7 +377,7 @@ if len(df_redirects) > 0:
     st.write(f"**Se encontraron {urls_unicas_redirects} URLs únicas con redirecciones ({len(df_redirects)} instancias totales):**")
     
     # Mostrar solo las primeras 10
-    tabla_redirects = df_redirects[['Destino', 'Fuente', 'Código de estado']].head(10).copy()
+    tabla_redirects = df_redirects[['Fuente', 'Destino', 'Código de estado']].head(10).copy()
     tabla_redirects.columns = ['Desde', 'Hasta', 'Código de estado']
     
     st.dataframe(tabla_redirects, use_container_width=True, hide_index=True)
@@ -398,7 +398,7 @@ if len(df_otros) > 0:
     urls_unicas_otros = df_otros['Destino'].nunique()
     st.write(f"**Se encontraron {urls_unicas_otros} URLs únicas con errores críticos ({len(df_otros)} instancias totales):**")
     
-    tabla_otros = df_otros[['Destino', 'Fuente', 'Código de estado', 'Tipo']].head(10).copy()
+    tabla_otros = df_otros[['Fuente', 'Destino', 'Código de estado', 'Tipo']].head(10).copy()
     tabla_otros.columns = ['Desde', 'Hasta', 'Código de estado', 'Tipo']
     
     st.dataframe(tabla_otros, use_container_width=True, hide_index=True)
