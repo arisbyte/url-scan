@@ -24,7 +24,7 @@ def generate_ai_analysis(df, resumen):
             top_urls = "No disponible"
         
         # Construir prompt para Claude
-        prompt = f"""Eres un experto en SEO técnico. Analiza los siguientes datos de un rastreo de sitio web con Screaming Frog y proporciona un análisis ejecutivo profesional.
+        prompt = f"""Eres un experto en SEO técnico. Analiza los siguientes datos de un rastreo de sitio web y proporciona un análisis ejecutivo conciso y accionable.
 
 DATOS DEL SITIO:
 - Total de enlaces problemáticos: {total_enlaces}
@@ -37,23 +37,41 @@ DATOS DEL SITIO:
 PÁGINAS CON MÁS PROBLEMAS:
 {top_urls}
 
-SOLICITUD:
-Proporciona un análisis estructurado en las siguientes secciones:
+ESTRUCTURA REQUERIDA:
 
-1. **DIAGNÓSTICO GENERAL**: Evaluación del estado actual del sitio (2-3 líneas)
+**DIAGNÓSTICO**
+Evaluación directa del estado del sitio en 2-3 líneas máximo.
 
-2. **PROBLEMAS CRÍTICOS**: Lista los 3 problemas más urgentes que deben resolverse
+**PROBLEMAS IDENTIFICADOS**
+Lista los problemas en orden de severidad (usa checkboxes):
+- [ ] Problema 1
+- [ ] Problema 2
+- [ ] Problema 3
 
-3. **RECOMENDACIONES PRIORITARIAS**: 
-   - Acciones inmediatas (próximas 24-48 horas)
-   - Acciones de corto plazo (próxima semana)
-   - Optimizaciones a mediano plazo (próximo mes)
+**PLAN DE ACCIÓN (Por Orden de Prioridad)**
+Acciones específicas y concretas ordenadas por prioridad (usa numeración):
 
-4. **IMPACTO EN SEO**: Cómo estos problemas afectan el posicionamiento y la experiencia del usuario
+1. **Prioridad Crítica**
+   - [ ] Acción específica 1
+   - [ ] Acción específica 2
 
-5. **PLAN DE ACCIÓN**: Pasos concretos y específicos para resolver los problemas
+2. **Prioridad Alta**
+   - [ ] Acción específica 1
+   - [ ] Acción específica 2
 
-Sé conciso, profesional y accionable. Usa formato markdown con bullets y negritas para resaltar puntos clave."""
+3. **Prioridad Media**
+   - [ ] Acción específica 1
+   - [ ] Acción específica 2
+
+**IMPACTO EN SEO**
+Breve explicación (2-3 bullets) de cómo esto afecta el posicionamiento.
+
+IMPORTANTE: 
+- Sé conciso y directo
+- NO menciones herramientas de rastreo
+- NO incluyas tiempos estimados
+- Usa formato checklist para acciones
+- Enfócate en QUÉ hacer, no en CUÁNDO hacerlo"""
 
         # Llamar a la API de Claude
         client = anthropic.Anthropic(api_key=st.secrets["ANTHROPIC_API_KEY"])
@@ -136,22 +154,21 @@ with col4:
 st.markdown("---")
 
 # ==================== SECCIÓN IA: ANÁLISIS INTELIGENTE ====================
-st.header("🤖 Análisis Inteligente con IA")
+# Título y botón en la misma línea
+col_title, col_button = st.columns([3, 1])
 
-if "ANTHROPIC_API_KEY" in st.secrets:
-    st.write("Genera un análisis profesional y recomendaciones accionables basadas en tus datos:")
-    
-    col_btn1, col_btn2, col_btn3 = st.columns([1, 2, 1])
-    
-    with col_btn2:
-        if st.button("🚀 Generar Análisis con Claude", type="primary", use_container_width=True):
-            with st.spinner("🔄 Claude está analizando tus datos... Esto puede tomar unos segundos."):
+with col_title:
+    st.header("🤖 Análisis Inteligente con IA")
+
+with col_button:
+    if "ANTHROPIC_API_KEY" in st.secrets:
+        if st.button("🚀 Generar Análisis", type="primary", use_container_width=True):
+            with st.spinner("Analizando..."):
                 analysis = generate_ai_analysis(df, resumen)
-                
-                # Guardar en session state para persistir
                 st.session_state['ai_analysis'] = analysis
-    
-    # Mostrar análisis si existe
+
+# Mostrar análisis si existe
+if "ANTHROPIC_API_KEY" in st.secrets:
     if 'ai_analysis' in st.session_state:
         st.markdown("---")
         st.subheader("📋 Análisis Generado")
