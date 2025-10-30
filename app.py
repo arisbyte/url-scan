@@ -205,56 +205,51 @@ codigo_404 = resumen.get(404, 0)
 
 total = len(df)
 
-# Crear columnas para las tarjetas
-col1, col2, col3 = st.columns(3)
+# Crear 5 columnas para las tarjetas en una sola línea
+col1, col2, col3, col4, col5 = st.columns(5)
 
 with col1:
     st.markdown(f"""
-    <div style="background-color: #FFA500; padding: 15px 10px; border-radius: 8px; text-align: center;">
-        <h3 style="color: white; margin: 0; font-size: 16px;">301 - Redirección</h3>
-        <h1 style="color: white; font-size: 36px; margin: 8px 0;">{codigo_301}</h1>
-        <p style="color: white; margin: 0; font-size: 18px; font-weight: bold;">{(codigo_301/total*100):.1f}%</p>
+    <div style="background-color: #FFA500; padding: 12px 8px; border-radius: 8px; text-align: center;">
+        <h4 style="color: white; margin: 0; font-size: 13px;">301</h4>
+        <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_301}</h1>
+        <p style="color: white; margin: 0; font-size: 16px;">{(codigo_301/total*100):.1f}%</p>
     </div>
     """, unsafe_allow_html=True)
 
 with col2:
     st.markdown(f"""
-    <div style="background-color: #FF8C00; padding: 15px 10px; border-radius: 8px; text-align: center;">
-        <h3 style="color: white; margin: 0; font-size: 16px;">403 - Prohibido</h3>
-        <h1 style="color: white; font-size: 36px; margin: 8px 0;">{codigo_403}</h1>
-        <p style="color: white; margin: 0; font-size: 18px; font-weight: bold;">{(codigo_403/total*100):.1f}%</p>
+    <div style="background-color: #FFD700; padding: 12px 8px; border-radius: 8px; text-align: center;">
+        <h4 style="color: #333; margin: 0; font-size: 13px;">302</h4>
+        <h1 style="color: #333; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_302}</h1>
+        <p style="color: #333; margin: 0; font-size: 16px;">{(codigo_302/total*100):.1f}%</p>
     </div>
     """, unsafe_allow_html=True)
 
 with col3:
     st.markdown(f"""
-    <div style="background-color: #DC143C; padding: 15px 10px; border-radius: 8px; text-align: center;">
-        <h3 style="color: white; margin: 0; font-size: 16px;">404 - No Encontrado</h3>
-        <h1 style="color: white; font-size: 36px; margin: 8px 0;">{codigo_404}</h1>
-        <p style="color: white; margin: 0; font-size: 18px; font-weight: bold;">{(codigo_404/total*100):.1f}%</p>
+    <div style="background-color: #FF6347; padding: 12px 8px; border-radius: 8px; text-align: center;">
+        <h4 style="color: white; margin: 0; font-size: 13px;">400</h4>
+        <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_400}</h1>
+        <p style="color: white; margin: 0; font-size: 16px;">{(codigo_400/total*100):.1f}%</p>
     </div>
     """, unsafe_allow_html=True)
 
-st.markdown("<br>", unsafe_allow_html=True)
-
-# Segunda fila para códigos menos comunes
-col4, col5, col6 = st.columns(3)
-
 with col4:
     st.markdown(f"""
-    <div style="background-color: #FFD700; padding: 15px 10px; border-radius: 8px; text-align: center;">
-        <h3 style="color: #333; margin: 0; font-size: 16px;">302 - Redirección Temporal</h3>
-        <h1 style="color: #333; font-size: 36px; margin: 8px 0;">{codigo_302}</h1>
-        <p style="color: #333; margin: 0; font-size: 18px; font-weight: bold;">{(codigo_302/total*100):.1f}%</p>
+    <div style="background-color: #FF8C00; padding: 12px 8px; border-radius: 8px; text-align: center;">
+        <h4 style="color: white; margin: 0; font-size: 13px;">403</h4>
+        <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_403}</h1>
+        <p style="color: white; margin: 0; font-size: 16px;">{(codigo_403/total*100):.1f}%</p>
     </div>
     """, unsafe_allow_html=True)
 
 with col5:
     st.markdown(f"""
-    <div style="background-color: #FF6347; padding: 15px 10px; border-radius: 8px; text-align: center;">
-        <h3 style="color: white; margin: 0; font-size: 16px;">400 - Bad Request</h3>
-        <h1 style="color: white; font-size: 36px; margin: 8px 0;">{codigo_400}</h1>
-        <p style="color: white; margin: 0; font-size: 18px; font-weight: bold;">{(codigo_400/total*100):.1f}%</p>
+    <div style="background-color: #DC143C; padding: 12px 8px; border-radius: 8px; text-align: center;">
+        <h4 style="color: white; margin: 0; font-size: 13px;">404</h4>
+        <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_404}</h1>
+        <p style="color: white; margin: 0; font-size: 16px;">{(codigo_404/total*100):.1f}%</p>
     </div>
     """, unsafe_allow_html=True)
 
