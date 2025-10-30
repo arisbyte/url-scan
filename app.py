@@ -9,12 +9,7 @@ def generate_ai_analysis(df, resumen):
     """
     try:
         # Preparar resumen de datos para Claude
-        total_urls_unicas = df['Destino'].nunique()
-        total_instancias = len(df)
-        
-        # Códigos de estado (URLs únicas)
-        codigo_0 = resumen.get(0, 0)
-        codigo_200 = resumen.get(200, 0)
+        total_enlaces = len(df)
         codigo_301 = resumen.get(301, 0)
         codigo_302 = resumen.get(302, 0)
         codigo_308 = resumen.get(308, 0)
@@ -23,19 +18,12 @@ def generate_ai_analysis(df, resumen):
         codigo_404 = resumen.get(404, 0)
         codigo_500 = resumen.get(500, 0)
         
-        # Top 5 páginas origen (Desde) con más problemas
+        # Top 5 URLs con más problemas (si hay columna Fuente)
         if 'Fuente' in df.columns:
             top_problemas = df['Fuente'].value_counts().head(5)
-            top_urls_desde = "\n".join([f"- {url}: {count} enlaces problemáticos" for url, count in top_problemas.items()])
+            top_urls = "\n".join([f"- {url}: {count} enlaces problemáticos" for url, count in top_problemas.items()])
         else:
-            top_urls_desde = "No disponible"
-        
-        # Top 5 URLs destino (Hasta) más problemáticas
-        if 'Destino' in df.columns:
-            top_destinos = df['Destino'].value_counts().head(5)
-            top_urls_hasta = "\n".join([f"- {url}: {count} instancias" for url, count in top_destinos.items()])
-        else:
-            top_urls_hasta = "No disponible"
+            top_urls = "No disponible"
         
         # Analizar anclas únicas en errores 404
         anclas_404 = ""
@@ -45,81 +33,25 @@ def generate_ai_analysis(df, resumen):
                 # Reemplazar None/NaN por guion
                 df_404_temp['Ancla'] = df_404_temp['Ancla'].fillna('-')
                 anclas_unicas = df_404_temp['Ancla'].unique()
-                anclas_404 = f"\n\nANCLAS ÚNICAS EN ERRORES 404 ({len(anclas_unicas)} diferentes):\n" + "\n".join([f"- {ancla}" for ancla in anclas_unicas[:15]])
-                if len(anclas_unicas) > 15:
-                    anclas_404 += f"\n... y {len(anclas_unicas) - 15} más"
+                anclas_404 = f"\n\nANCLAS ÚNICAS EN ERRORES 404:\n" + "\n".join([f"- {ancla}" for ancla in anclas_unicas[:10]])
+                if len(anclas_unicas) > 10:
+                    anclas_404 += f"\n... y {len(anclas_unicas) - 10} más"
         
         # Construir prompt para Claude
-        prompt = f"""Eres un experto en análisis de enlaces y códigos de respuesta HTTP. Analiza los siguientes datos de un rastreo web y proporciona un diagnóstico ejecutivo conciso y accionable.
+        prompt = f"""Eres un experto en SEO técnico. Analiza los siguientes datos de un rastreo de sitio web y proporciona un análisis ejecutivo conciso y accionable.
 
-CONTEXTO DEL ANÁLISIS:
-Este informe usa ELSA (Error Link Status Analyzer) que analiza URLs únicas encontradas durante el rastreo.
-- Total de URLs únicas analizadas: {total_urls_unicas:,}
-- Total de instancias de enlaces: {total_instancias:,}
+DATOS DEL SITIO:
+- Total de enlaces problemáticos: {total_enlaces}
+- Errores 404 (páginas no encontradas): {codigo_404}
+- Errores 403 (acceso prohibido): {codigo_403}
+- Errores 400 (bad request): {codigo_400}
+- Errores 500 (error del servidor): {codigo_500}
+- Redirecciones 301 (permanentes): {codigo_301}
+- Redirecciones 302 (temporales): {codigo_302}
+- Redirecciones 308 (permanentes): {codigo_308}
 
-DISTRIBUCIÓN POR CÓDIGO DE RESPUESTA (URLs únicas):
-- Código 0 (sin respuesta): {codigo_0}
-- Código 200 (OK): {codigo_200}
-- Código 301 (redirect permanente): {codigo_301}
-- Código 302 (redirect temporal): {codigo_302}
-- Código 308 (redirect permanente HTTP): {codigo_308}
-- Código 400 (bad request): {codigo_400}
-- Código 403 (acceso prohibido): {codigo_403}
-- Código 404 (no encontrado): {codigo_404}
-- Código 500 (error de servidor): {codigo_500}
-
-TOP 5 PÁGINAS ORIGEN (DESDE) CON MÁS PROBLEMAS:
-{top_urls_desde}
-
-TOP 5 URLs DESTINO (HASTA) MÁS PROBLEMÁTICAS:
-{top_urls_hasta}{anclas_404}
-
-ESTRUCTURA REQUERIDA:
-
-**DIAGNÓSTICO GENERAL**
-Evaluación del estado del sitio en 2-3 líneas. Enfócate en los códigos más críticos (404, 500, 403).
-
-**PROBLEMAS IDENTIFICADOS**
-Lista los problemas en orden de severidad:
-- [ ] Problema crítico 1
-- [ ] Problema crítico 2
-- [ ] Problema de alta prioridad 1
-- [ ] Problema de media prioridad 1
-
-**ANÁLISIS DE PATRONES**
-Identifica patrones basándote en:
-- Páginas origen (Desde) que generan más problemas
-- URLs destino (Hasta) más afectadas
-- Anclas en errores 404: patrones, causas probables, texto vacío (-) vs texto descriptivo
-
-**PLAN DE ACCIÓN PRIORIZADO**
-
-1. **🔴 Prioridad Crítica** (Resolver inmediatamente)
-   - [ ] Acción específica para 404s
-   - [ ] Acción específica para 500s
-   - [ ] Acción específica para 403s
-
-2. **🟡 Prioridad Alta** (Resolver esta semana)
-   - [ ] Acción específica para redirecciones
-   - [ ] Acción específica para 400s
-
-3. **🟢 Prioridad Media** (Optimización)
-   - [ ] Mejora sugerida 1
-   - [ ] Mejora sugerida 2
-
-**IMPACTO EN SEO Y EXPERIENCIA DE USUARIO**
-- Impacto en rastreo/indexación
-- Impacto en experiencia de usuario
-- Impacto en autoridad/ranking
-
-INSTRUCCIONES IMPORTANTES:
-- Sé conciso y directo - máximo 250 palabras total
-- NO menciones herramientas de rastreo (Screaming Frog, etc)
-- NO incluyas tiempos estimados
-- Usa formato checklist para todas las acciones
-- Enfócate en QUÉ hacer, no en CÓMO hacerlo técnicamente
-- Si hay muchos anclas con "-", menciona que son enlaces sin texto (imágenes/scripts)
-- Prioriza basándote en la cantidad de URLs únicas afectadas"""
+PÁGINAS CON MÁS PROBLEMAS:
+{top_urls}{anclas_404}
 
 ESTRUCTURA REQUERIDA:
 
@@ -219,21 +151,7 @@ if uploaded_file is None:
 else:
     # Cargar el CSV real
     df = pd.read_csv(uploaded_file, sep=';', encoding='utf-8-sig')
-    
-    # Validar que exista la columna Destino y tenga datos
-    if 'Destino' not in df.columns:
-        st.error("⚠️ El archivo CSV no contiene la columna 'Destino'. Verifica que el archivo sea correcto.")
-        st.stop()
-    
-    if df['Destino'].isna().all():
-        st.error("⚠️ La columna 'Destino' está vacía. Verifica que el archivo contenga datos válidos.")
-        st.stop()
-    
     urls_unicas = df['Destino'].nunique()
-    if urls_unicas == 0:
-        st.error("⚠️ No se encontraron URLs únicas en la columna 'Destino'. Verifica el contenido del archivo.")
-        st.stop()
-    
     st.success(f"✅ Archivo cargado correctamente: {urls_unicas:,} URLs únicas encontradas")
 
 # ==================== SECCIÓN 1: RESUMEN EJECUTIVO ====================
@@ -292,101 +210,87 @@ codigo_500 = resumen.get(500, 0)
 # Total de URLs únicas para calcular porcentajes
 total = df['Destino'].nunique()
 
-# Evitar división por cero
-if total == 0:
-    st.error("⚠️ No se encontraron URLs válidas en la columna 'Destino'. Verifica el formato del archivo CSV.")
-    st.stop()
-
 # Crear 9 columnas para las tarjetas en una sola línea
 col1, col2, col3, col4, col5, col6, col7, col8, col9 = st.columns(9)
 
 with col1:
-    porcentaje_0 = (codigo_0/total*100) if total > 0 else 0
     st.markdown(f"""
     <div style="background-color: #6c757d; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">0</h4>
         <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_0}</h1>
-        <p style="color: white; margin: 0; font-size: 16px;">{porcentaje_0:.1f}%</p>
+        <p style="color: white; margin: 0; font-size: 16px;">{(codigo_0/total*100):.1f}%</p>
     </div>
     """, unsafe_allow_html=True)
 
 with col2:
-    porcentaje_200 = (codigo_200/total*100) if total > 0 else 0
     st.markdown(f"""
     <div style="background-color: #28a745; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">200</h4>
         <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_200}</h1>
-        <p style="color: white; margin: 0; font-size: 16px;">{porcentaje_200:.1f}%</p>
+        <p style="color: white; margin: 0; font-size: 16px;">{(codigo_200/total*100):.1f}%</p>
     </div>
     """, unsafe_allow_html=True)
 
 with col3:
-    porcentaje_301 = (codigo_301/total*100) if total > 0 else 0
     st.markdown(f"""
     <div style="background-color: #FFA500; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">301</h4>
         <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_301}</h1>
-        <p style="color: white; margin: 0; font-size: 16px;">{porcentaje_301:.1f}%</p>
+        <p style="color: white; margin: 0; font-size: 16px;">{(codigo_301/total*100):.1f}%</p>
     </div>
     """, unsafe_allow_html=True)
 
 with col4:
-    porcentaje_302 = (codigo_302/total*100) if total > 0 else 0
     st.markdown(f"""
     <div style="background-color: #FFD700; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: #333; margin: 0; font-size: 13px;">302</h4>
         <h1 style="color: #333; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_302}</h1>
-        <p style="color: #333; margin: 0; font-size: 16px;">{porcentaje_302:.1f}%</p>
+        <p style="color: #333; margin: 0; font-size: 16px;">{(codigo_302/total*100):.1f}%</p>
     </div>
     """, unsafe_allow_html=True)
 
 with col5:
-    porcentaje_400 = (codigo_400/total*100) if total > 0 else 0
     st.markdown(f"""
     <div style="background-color: #FF6347; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">400</h4>
         <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_400}</h1>
-        <p style="color: white; margin: 0; font-size: 16px;">{porcentaje_400:.1f}%</p>
+        <p style="color: white; margin: 0; font-size: 16px;">{(codigo_400/total*100):.1f}%</p>
     </div>
     """, unsafe_allow_html=True)
 
 with col6:
-    porcentaje_403 = (codigo_403/total*100) if total > 0 else 0
     st.markdown(f"""
     <div style="background-color: #FF8C00; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">403</h4>
         <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_403}</h1>
-        <p style="color: white; margin: 0; font-size: 16px;">{porcentaje_403:.1f}%</p>
+        <p style="color: white; margin: 0; font-size: 16px;">{(codigo_403/total*100):.1f}%</p>
     </div>
     """, unsafe_allow_html=True)
 
 with col7:
-    porcentaje_404 = (codigo_404/total*100) if total > 0 else 0
     st.markdown(f"""
     <div style="background-color: #DC143C; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">404</h4>
         <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_404}</h1>
-        <p style="color: white; margin: 0; font-size: 16px;">{porcentaje_404:.1f}%</p>
+        <p style="color: white; margin: 0; font-size: 16px;">{(codigo_404/total*100):.1f}%</p>
     </div>
     """, unsafe_allow_html=True)
 
 with col8:
-    porcentaje_308 = (codigo_308/total*100) if total > 0 else 0
     st.markdown(f"""
     <div style="background-color: #FFB347; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">308</h4>
         <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_308}</h1>
-        <p style="color: white; margin: 0; font-size: 16px;">{porcentaje_308:.1f}%</p>
+        <p style="color: white; margin: 0; font-size: 16px;">{(codigo_308/total*100):.1f}%</p>
     </div>
     """, unsafe_allow_html=True)
 
 with col9:
-    porcentaje_500 = (codigo_500/total*100) if total > 0 else 0
     st.markdown(f"""
     <div style="background-color: #8B0000; padding: 12px 8px; border-radius: 8px; text-align: center;">
         <h4 style="color: white; margin: 0; font-size: 13px;">500</h4>
         <h1 style="color: white; font-size: 42px; margin: 5px 0; font-weight: bold;">{codigo_500}</h1>
-        <p style="color: white; margin: 0; font-size: 16px;">{porcentaje_500:.1f}%</p>
+        <p style="color: white; margin: 0; font-size: 16px;">{(codigo_500/total*100):.1f}%</p>
     </div>
     """, unsafe_allow_html=True)
 
