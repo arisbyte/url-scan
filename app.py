@@ -317,8 +317,8 @@ df_otros = df[df['Código de estado'].isin([400, 403])]
 if len(df_otros) > 0:
     st.write(f"**Se encontraron {len(df_otros)} errores críticos:**")
     
-    tabla_otros = df_otros[['Fuente', 'Destino', 'Código de estado', 'Ancla']].head(10).copy()
-    tabla_otros.columns = ['Página de Origen', 'URL con Error', 'Código', 'Texto del Enlace']
+    tabla_otros = df_otros[['Fuente', 'Destino', 'Código de estado', 'Tipo']].head(10).copy()
+    tabla_otros.columns = ['Página de Origen', 'URL con Error', 'Código', 'Tipo de Recurso']
     
     st.dataframe(tabla_otros, use_container_width=True, hide_index=True)
     
