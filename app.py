@@ -219,7 +219,21 @@ if uploaded_file is None:
 else:
     # Cargar el CSV real
     df = pd.read_csv(uploaded_file, sep=';', encoding='utf-8-sig')
+    
+    # Validar que exista la columna Destino y tenga datos
+    if 'Destino' not in df.columns:
+        st.error("⚠️ El archivo CSV no contiene la columna 'Destino'. Verifica que el archivo sea correcto.")
+        st.stop()
+    
+    if df['Destino'].isna().all():
+        st.error("⚠️ La columna 'Destino' está vacía. Verifica que el archivo contenga datos válidos.")
+        st.stop()
+    
     urls_unicas = df['Destino'].nunique()
+    if urls_unicas == 0:
+        st.error("⚠️ No se encontraron URLs únicas en la columna 'Destino'. Verifica el contenido del archivo.")
+        st.stop()
+    
     st.success(f"✅ Archivo cargado correctamente: {urls_unicas:,} URLs únicas encontradas")
 
 # ==================== SECCIÓN 1: RESUMEN EJECUTIVO ====================
@@ -277,6 +291,11 @@ codigo_500 = resumen.get(500, 0)
 
 # Total de URLs únicas para calcular porcentajes
 total = df['Destino'].nunique()
+
+# Evitar división por cero
+if total == 0:
+    st.error("⚠️ No se encontraron URLs válidas en la columna 'Destino'. Verifica el formato del archivo CSV.")
+    st.stop()
 
 # Crear 9 columnas para las tarjetas en una sola línea
 col1, col2, col3, col4, col5, col6, col7, col8, col9 = st.columns(9)
