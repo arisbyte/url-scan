@@ -101,7 +101,7 @@ st.markdown("""
 <div style="text-align: center;">
     <img src="https://imagizer.imageshack.com/img922/1260/r88PYU.png" 
          style="height: 80px; margin-bottom: 20px;">
-    <h1 style="margin: 0;">🔍 Informe de Enlaces Problemáticos - Análisis SEO Técnico</h1>
+    <h1 style="margin: 0;">Informe de Enlaces Problemáticos - Análisis SEO Técnico</h1>
     <p style="color: #666; font-size: 18px; margin: 10px 0 0 0;">Identificación y diagnóstico de errores 404, redirecciones y problemas de acceso</p>
 </div>
 """, unsafe_allow_html=True)
@@ -128,9 +128,25 @@ else:
     df = pd.read_csv(uploaded_file, sep=';', encoding='utf-8-sig')
     st.success(f"✅ Archivo cargado correctamente: {len(df)} enlaces encontrados")
 
-# ==================== SECCIÓN 1: RESUMEN EJECUTIVO ====================
-st.header("📊 1. Resumen Ejecutivo")
+# ==================== SECCIÓN 1: RESUMEN EJECUTIVO + IA ====================
+# Títulos en la misma línea
+col_title1, col_title2, col_button = st.columns([2, 2, 1])
 
+with col_title1:
+    st.header("1. Resumen Ejecutivo")
+
+with col_title2:
+    st.header("🤖 Análisis Inteligente con IA")
+
+with col_button:
+    st.write("")  # Espaciado
+    if "ANTHROPIC_API_KEY" in st.secrets:
+        if st.button("🚀 Generar Análisis", type="primary", use_container_width=True):
+            with st.spinner("Analizando..."):
+                analysis = generate_ai_analysis(df, resumen)
+                st.session_state['ai_analysis'] = analysis
+
+# Métricas del resumen ejecutivo
 col1, col2, col3, col4 = st.columns(4)
 
 # Contar por código de estado
@@ -153,24 +169,9 @@ with col4:
 
 st.markdown("---")
 
-# ==================== SECCIÓN IA: ANÁLISIS INTELIGENTE ====================
-# Título y botón en la misma línea
-col_title, col_button = st.columns([3, 1])
-
-with col_title:
-    st.header("🤖 Análisis Inteligente con IA")
-
-with col_button:
-    if "ANTHROPIC_API_KEY" in st.secrets:
-        if st.button("🚀 Generar Análisis", type="primary", use_container_width=True):
-            with st.spinner("Analizando..."):
-                analysis = generate_ai_analysis(df, resumen)
-                st.session_state['ai_analysis'] = analysis
-
 # Mostrar análisis si existe
 if "ANTHROPIC_API_KEY" in st.secrets:
     if 'ai_analysis' in st.session_state:
-        st.markdown("---")
         st.subheader("📋 Análisis Generado")
         
         # Mostrar el análisis con markdown
@@ -183,12 +184,12 @@ if "ANTHROPIC_API_KEY" in st.secrets:
             file_name="analisis_seo_ia.txt",
             mime="text/plain"
         )
+        st.markdown("---")
 else:
     st.info("💡 El análisis con IA estará disponible cuando configures tu API key de Anthropic en Streamlit Secrets.")
     st.write("**Agrega tu API key en:** Settings → Secrets")
     st.code('ANTHROPIC_API_KEY = "tu_key_aquí"', language="toml")
-
-st.markdown("---")
+    st.markdown("---")
 
 # ==================== SECCIÓN 2: DISTRIBUCIÓN POR CÓDIGO ====================
 st.header("📈 2. Distribución de Códigos de Estado")
@@ -329,7 +330,7 @@ else:
 st.markdown("---")
 
 # ==================== PIE DE PÁGINA ====================
-st.markdown("### 🎯 Códigos a Solucionar por Orden de Prioridad:")
+st.markdown("### Códigos a Solucionar por Orden de Prioridad:")
 st.markdown("""
 **🔴 PRIORIDAD CRÍTICA (Solucionar Inmediatamente):**
 - **404 - Not Found**: Enlaces rotos que generan error al usuario. Corregir o redirigir las URLs.
