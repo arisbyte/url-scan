@@ -156,7 +156,7 @@ else:
 # ==================== SECCIÓN 1: RESUMEN EJECUTIVO ====================
 st.header("1. Resumen Ejecutivo")
 
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3, col4, col5, col6 = st.columns(6)
 
 # Contar por código de estado
 resumen = df['Código de estado'].value_counts()
@@ -173,6 +173,14 @@ with col3:
     st.metric("🚫 Errores 403", total_403)
 
 with col4:
+    total_400 = resumen.get(400, 0)
+    st.metric("⚠️ Errores 400", total_400)
+
+with col5:
+    total_500 = resumen.get(500, 0)
+    st.metric("🔥 Errores 500", total_500)
+
+with col6:
     total_redirects = resumen.get(301, 0) + resumen.get(302, 0) + resumen.get(308, 0)
     st.metric("↪️ Redirecciones", total_redirects)
 
