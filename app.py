@@ -161,8 +161,11 @@ col1, col2, col3, col4, col5, col6 = st.columns(6)
 # Contar URLs únicas de destino por código de estado
 resumen = df.groupby('Código de estado')['Destino'].nunique()
 
+# Total de URLs únicas (no total de filas)
+total_urls_unicas = df['Destino'].nunique()
+
 with col1:
-    st.metric("Total de Enlaces", f"{len(df):,}")
+    st.metric("Total de URLs Únicas", f"{total_urls_unicas:,}")
 
 with col2:
     total_404 = resumen.get(404, 0)
@@ -201,7 +204,8 @@ codigo_403 = resumen.get(403, 0)
 codigo_404 = resumen.get(404, 0)
 codigo_500 = resumen.get(500, 0)
 
-total = len(df)
+# Total de URLs únicas para calcular porcentajes
+total = df['Destino'].nunique()
 
 # Crear 7 columnas para las tarjetas en una sola línea
 col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
@@ -309,10 +313,12 @@ st.markdown("---")
 # Tabla detallada
 st.subheader("Tabla Detallada")
 
+total_urls_unicas = df['Destino'].nunique()
+
 resumen_df = pd.DataFrame({
     'Código': resumen.index,
     'Cantidad': resumen.values,
-    'Porcentaje': (resumen.values / len(df) * 100).round(1)
+    'Porcentaje': (resumen.values / total_urls_unicas * 100).round(1)
 })
 resumen_df['Porcentaje'] = resumen_df['Porcentaje'].astype(str) + '%'
 
