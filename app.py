@@ -98,8 +98,20 @@ st.set_page_config(
 
 # ==================== TÍTULO ====================
 st.markdown("""
+<style>
+.logo-light { display: none; }
+.logo-dark { display: block; }
+
+@media (prefers-color-scheme: light) {
+    .logo-light { display: block; }
+    .logo-dark { display: none; }
+}
+</style>
+
 <div style="text-align: center;">
-    <img src="https://imagizer.imageshack.com/img922/1260/r88PYU.png" 
+    <img class="logo-dark" src="https://imagizer.imageshack.com/img922/1260/r88PYU.png" 
+         style="height: 80px; margin-bottom: 20px;">
+    <img class="logo-light" src="https://imagizer.imageshack.com/img923/8185/hGH4WQ.png" 
          style="height: 80px; margin-bottom: 20px;">
     <h1 style="margin: 0;">Informe de Enlaces Problemáticos - Análisis SEO Técnico</h1>
     <p style="color: #666; font-size: 18px; margin: 10px 0 0 0;">Identificación y diagnóstico de errores 404, redirecciones y problemas de acceso</p>
